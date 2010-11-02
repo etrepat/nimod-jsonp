@@ -1,0 +1,19 @@
+GEM
+  remote: http://rubygems.org/
+  remote: http://gems.github.com/
+  specs:
+    json (1.4.6)
+    rack (1.2.1)
+    redis (2.0.13)
+    sinatra (1.1.0)
+      rack (~> 1.1)
+      tilt (~> 1.1)
+    tilt (1.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  json
+  redis (>= 2.0.0)
+  sinatra (~> 1.0)
