@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'json'
 require 'redis'
+require 'rss/2.0'
+require 'open-uri'
 
 configure :development, :test do
   $redis = Redis.connect
