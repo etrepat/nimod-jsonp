@@ -38,6 +38,10 @@ module Nimod
     def to_json
       self.to_hash.to_json
     end
+    
+    def ==(other)
+      to_hash == other.to_hash
+    end
 
     def self.create_from_rss_item(item)
       return Image.new(:title => item.title, :description => item.description,
