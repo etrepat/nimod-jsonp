@@ -15,8 +15,14 @@ describe Nimod::Image do
     @image = Nimod::Image.new(@hash)
   end
 
-  it 'should initialize empty if no arguments provided' do
+  it 'should return a proper Image instance' do
     im = Nimod::Image.new
+    im.should be_a(Nimod::Image)
+  end
+
+  it 'should be empty if no arguments provided' do
+    im = Nimod::Image.new
+
     im.instance_variables.each do |v|
       method = v.to_s.sub('@', '')
       im.send(method).should be(nil)

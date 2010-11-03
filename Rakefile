@@ -1,9 +1,8 @@
 require 'rubygems'
 require 'rake'
 
-# RSpec
+# RSpec ###########################################
 require 'rspec/core/rake_task'
-
 
 desc "Run all specs"
 task :spec => ["spec:unit"]
@@ -13,6 +12,7 @@ RSpec::Core::RakeTask.new('spec:unit') do |t|
   t.rspec_opts = ['--colour --format progress']
   t.pattern = 'spec/*_spec.rb'
 end
+###################################################
 
 task :default => :spec
 
