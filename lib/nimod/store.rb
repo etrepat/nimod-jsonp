@@ -27,7 +27,7 @@ module Nimod
     end
 
     def size
-      @redis.scard group
+      @store.scard group
     end
 
     def random
@@ -41,6 +41,21 @@ module Nimod
     def first
       self.get(@store.sort(group, :limit => [0, 1], :order => 'asc alpha'))
     end
+  end
+
+  def self.get_store env
+    if env == "production"
+      uri = URI.parse(ENV['REDISTOGO_URL'])
+      @@store = Nimod::Store.new(Redis.connect(:host => uri.host, :port => uri.port, :password => uri.password))
+    else
+      @@store = Nimod::Store.new
+    end
+  end
+
+  @@store = get_store ENV['RACK_ENV']
+
+  def self.store
+    @@store
   end
 end
 

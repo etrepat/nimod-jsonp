@@ -16,7 +16,8 @@ module Nimod
 
     def id
       return nil unless date
-      date.strftime('%Y%m%d')
+      #date.strftime('%Y%m%d')
+      Image.key_from_time(date)
     end
 
     alias :key :id
@@ -38,7 +39,7 @@ module Nimod
     def to_json
       self.to_hash.to_json
     end
-    
+
     def ==(other)
       to_hash == other.to_hash
     end
@@ -52,6 +53,10 @@ module Nimod
 
     def self.from_json(json)
       return Image.new(JSON.parse(json))
+    end
+
+    def self.key_from_time(time)
+      time.strftime('%Y%m%d')
     end
   end
 end

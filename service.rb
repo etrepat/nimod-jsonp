@@ -1,73 +1,55 @@
-require File.dirname(__FILE__) + '/lib/nimod.rb'
 require 'sinatra'
+require 'erb'
+require File.dirname(__FILE__) + '/lib/nimod.rb'
+require 'chronic'
+
+disable :run, :reload
+enable :inline_templates
+
+helpers do
+  def today
+    Time.now.utc
+  end
+
+  def render_response_for date, options={}
+    @data = Nimod.get_image_for date, options
+    halt 404, 'Not found' unless @data
+    erb :index, :layout => false
+  end
+end
+
+before do
+  @callback = params.delete('callback') || 'callback'
+  content_type :js
+end
+
+error do
+  @data = {:error => 'A nasty error ocurred.'}
+  erb :index, :layout => false
+end
+
+not_found do
+  @data = {:error => 'Requested resource does not exist.'}
+  erb :index, :layout => false
+end
 
 get '/' do
-  "Hi there"
+  render_response_for today, :fallback => true
 end
-#require 'sinatra'
-#require 'json'
-#require 'redis'
-#require 'rss/2.0'
-#require 'open-uri'
 
-#configure :development, :test do
-#  $redis = Redis.connect
-#end
+get '/:description' do
+  time = Chronic.parse(params[:description])
+  halt 400, 'Bad time description' unless time
+  render_response_for time
+end
 
-#configure :production do
-#  uri = URI.parse(ENV['REDISTOGO_URL'])
-#  $redis = Redis.connect(:host => uri.host, :port => uri.port, :password => uri.password)
-#end
+get '/:year/:month/:day' do
+  key = "#{params[:year].rjust(4,'0')}#{params[:month].rjust(2,'0')}#{params[:day].rjust(2,'0')}"
+  render_response_for key
+end
 
-#helpers do
-#  def today
-#    @today ||= Time.now
-#  end#
+__END__
 
-#  def time_to_key(t = today)
-#    t.strftime('%Y%m%d')
-#  end
-
-#  def get_latest_image_url
-#    latest = $redis.get time_to_key
-#    unless latest
-#      latest = $redis.get($redis.sort("nasa-images-of-the-day", :limit => [0, 1], :order => 'desc alpha'))
-#      unless latest
-#        raw = open('http://www.nasa.gov/rss/lg_image_of_the_day.rss').read
-#        rss = RSS::Parser.parse(raw, false)
-#        rss.items.each do |item|
-#          k = time_to_key(Time.parse(item.date.to_s))
-#          unless $redis.exists(k)
-#            $redis.set k, item.enclosure.url
-#            $redis.sadd "nasa-images-of-the-day", k#
-#          end
-#        end
-#        latest = $redis.get $redis.srandmember("nasa-images-of-the-day")
-#      end
-#    end
-
-#    latest
-#  end
-#end
-
-#before do
-#  @data = {:env => ENV['RACK_ENV']}
-#  @callback = params.delete('callback') || 'callback'
-#  content_type :js
-#end
-
-#get '/' do
-#  @data[:url] = get_latest_image_url
-#  "#{@callback}(#{@data.to_json})"
-#end
-
-#error do
-#  @data[:error] = 'A nasty error ocurred.'
-#  "#{@callback}(#{@data.to_json})"
-#end
-
-#not_found do
-#  @data[:error] = 'Requested resource does not exist.'
-#  "#{@callback}(#{@data.to_json})"
-#end
+@@ index
+<%= "#{@callback}(#{@data.to_json})" %>
 
