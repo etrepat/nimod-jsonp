@@ -43,6 +43,8 @@ module Nimod
     end
   end
 
+  @@store = nil
+
   def self.get_store env
     if env == "production"
       uri = URI.parse(ENV['REDISTOGO_URL'])
@@ -52,10 +54,8 @@ module Nimod
     end
   end
 
-  @@store = get_store ENV['RACK_ENV']
-
   def self.store
-    @@store
+    @@store ||= get_store ENV['RACK_ENV']
   end
 end
 

@@ -20,11 +20,13 @@ require File.dirname(__FILE__) + '/lib/nimod.rb'
 
 desc "Fetches new images (if any) from image of the day feed"
 task :fetch do
+  puts "[#{Time.now}] Fetching new NASA IOTD images."
   Nimod.fetch_from_feed
 end
 
 desc "Cron task -- periodically do things (heroku)"
 task :cron do
   # fetch images when invoked
-  Rake::Task['fetch']
+  Rake::Task['fetch'].invoke
 end
+
